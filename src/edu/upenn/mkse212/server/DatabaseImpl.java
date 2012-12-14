@@ -246,13 +246,14 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	//Returns true once other is removed as username's friend.
 	@Override
 	public Boolean removeFriend(String username, String other) {
-		if (!this.isFriendsWith(username, other)) return new Boolean(false);
+		//if (!this.isFriendsWith(username, other)) return new Boolean(false);
 		GetAttributesResult result = db.getAttributes(
 				new GetAttributesRequest(Names.USERS, username));
 		List<Attribute> attributeList = result.getAttributes();
 		List<Attribute> toBeDeleted = new ArrayList<Attribute>();
 		for (Attribute a : attributeList) {
-			if (a.equals(other)) toBeDeleted.add(a);
+			if (a.getName().equals(Names.FRIEND) && a.getValue().equals(other))
+				toBeDeleted.add(a);
 		}
 		db.deleteAttributes(new DeleteAttributesRequest(Names.USERS, Names.FRIEND, toBeDeleted,
 				new UpdateCondition()));
