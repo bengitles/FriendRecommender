@@ -25,6 +25,7 @@ public class PennBook implements EntryPoint {
 	private SideProfilePanel sidePanel;
 	private CommandBar comBar;
 	private EditProfilePanel editPanel;
+	private TrackOnlineBar onlineBar;
   
 	protected DatabaseAsync getDatabaseService() {return databaseService;}
 	
@@ -43,6 +44,8 @@ public class PennBook implements EntryPoint {
 	protected CommandBar getNavigationBar() {return comBar;}
 	
 	protected EditProfilePanel getEditPanel() {return editPanel;}
+	
+	protected TrackOnlineBar getOnlineBar() {return onlineBar;}
   
 	public void onModuleLoad() {
 		dockPanel = new DockPanel();
@@ -57,6 +60,7 @@ public class PennBook implements EntryPoint {
 		sidePanel = new SideProfilePanel(this);
 		comBar = new CommandBar(this);
 		editPanel = new EditProfilePanel(this);
+		onlineBar = new TrackOnlineBar(this);
 		
 		welcomeBar.display();
 		loginPanel.display();
