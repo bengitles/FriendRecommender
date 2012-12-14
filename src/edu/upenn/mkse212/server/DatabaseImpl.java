@@ -205,11 +205,14 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	@Override
 	public Boolean isFriendsWith(String username, String other) {
 		for (Attribute a : this.getUserAttributeList(username)) {
-			if (a.equals(Names.FRIEND) && a.getValue().equals(other)) {
-				System.out.println(username + " is friends with " + other);
-				return new Boolean(true);
-			}
-				
+			System.out.println(a.getName());
+			if (a.getName().equals(Names.FRIEND)) {
+				System.out.println("Friend found :" + a.getValue());
+				if (a.getValue().equals(other)) {
+					System.out.println(username + " is friends with " + other);
+					return new Boolean(true);
+				}
+			}		
 		}
 		return new Boolean(false);
 	}

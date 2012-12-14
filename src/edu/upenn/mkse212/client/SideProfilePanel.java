@@ -1,5 +1,7 @@
 package edu.upenn.mkse212.client;
 
+import java.util.List;
+
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
@@ -55,15 +57,14 @@ public class SideProfilePanel {
 			button3.setWidth("120px");
 			p.add(button3,10,240);
 		} else {
-			parent.getDatabaseService().isFriendsWith(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
+			parent.getDatabaseService().getValues(parent.getNavigationBar().getUser(), Names.FRIEND, new AsyncCallback<List<String>>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					parent.popupBox("RPC failure", "Cannot communicate with the server");
 				}
 				
 				@Override
-				public void onSuccess(Boolean isFollowing) {
-					System.out.print(isFollowing);
+				public void onSuccess(List<String> results) {
 					if (isFollowing) {
 						PushButton button3 = new PushButton("Unfollow");
 						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
