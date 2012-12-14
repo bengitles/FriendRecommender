@@ -15,7 +15,7 @@ import edu.upenn.mkse212.server.DatabaseImpl;
 public class FileCreator {
 	
 	public static void main (String[] args) throws IOException {
-		DatabaseImpl db = new DatabaseImpl();
+		DatabaseAsync db = new Database.Util.getInstance();
 		final Map<String, List<String>> friends = new HashMap<String, List<String>>();
 		final Map<String, List<String>> interests = new HashMap<String, List<String>>();
 		final Map<String, String> affiliation = new HashMap<String, String>();
