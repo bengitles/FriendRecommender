@@ -61,6 +61,7 @@ public class LoginPanel {
 							parent.getNavigationBar().display(username);
 							parent.getSidePanel().display(username);
 							parent.getWallPanel().display(username);
+							parent.getOnlineBar().display();
 						}
 					}
 				});
@@ -80,6 +81,7 @@ public class LoginPanel {
 				parent.getNavigationBar().display(username);
 				parent.getSidePanel().display(username);
 				parent.getWallPanel().display(username);
+				parent.getOnlineBar().display();
 			}
 		});
 	}
