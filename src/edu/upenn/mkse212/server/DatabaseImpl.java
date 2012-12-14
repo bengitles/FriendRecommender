@@ -261,8 +261,8 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	public String postOnWall(String username, String other, String content) {
 		if (content.trim().equals("")) return null;
 		SelectResult result = db.select(new SelectRequest(
-				"SELECT * FROM " + Names.WALL + " WHERE " + 
-						Names.RECEIVER + "=\'" + other + "\'"));
+				"SELECT * FROM '" + Names.WALL + "' WHERE " + 
+						Names.RECEIVER + " = '" + other + "'").withConsistentRead(true));
 		int numPosts = 0;
 		if (result.getItems()!=null) numPosts = result.getItems().size(); 
 		String id = username + Names.TO + other + Names.ID + (numPosts +1);
