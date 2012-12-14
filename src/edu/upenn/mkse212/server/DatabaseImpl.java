@@ -204,27 +204,17 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	//Returns true if the "username" has "other" as a friend, false if not.
 	@Override
 	public Boolean isFriendsWith(String username, String other) {
-		for (Attribute a : this.getUserAttributeList(username)) {
-			System.out.println(a.getName());
-			if (a.getName().equals(Names.FRIEND)) {
-				System.out.println("Friend found :" + a.getValue());
-				if (a.getValue().equals(other)) {
-					System.out.println(username + " is friends with " + other);
-					return new Boolean(true);
-				}
-			}		
-		}
-		return new Boolean(false);
+		return new Boolean(this.getFriendsOf(username).contains(other));
 	}
 	
 	//Returns false if username is already friends with other.
 	//Returns true once the put is complete.
 	@Override
 	public Boolean addFriend(String username, String other) {
-		if (this.isFriendsWith(username, other)) return new Boolean(false);
-		List<ReplaceableAttribute> attributeList = new ArrayList<ReplaceableAttribute>();
-		attributeList.add(new ReplaceableAttribute(Names.FRIEND, other, false));
-		db.putAttributes(new PutAttributesRequest(Names.USERS, username, attributeList,
+		ReplaceableAttribute friend = new ReplaceableAttribute(other, "true", true);
+		List<ReplaceableAttribute> list = new ArrayList<ReplaceableAttribute>();
+		list.add(friend);
+		db.putAttributes(new PutAttributesRequest(Names.FRIENDS, username, list,
 				new UpdateCondition()));
 		return new Boolean(true);
 	}
@@ -232,12 +222,11 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	@Override
 	public List<String> getFriendsOf(String username) {
 		GetAttributesResult result = db.getAttributes(
-				new GetAttributesRequest(Names.USERS, username));
+				new GetAttributesRequest(Names.FRIENDS, username));
 		List<Attribute> attributeList = result.getAttributes();
 		List<String> friends = new ArrayList<String>();
 		for (Attribute a : attributeList) {
-			if (a.getName().equals(Names.FRIEND))
-				friends.add(a.getValue());
+			friends.add(a.getName());
 		}
 		return new ArrayList<String>(friends);
 	}
@@ -246,24 +235,16 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	//Returns true once other is removed as username's friend.
 	@Override
 	public Boolean removeFriend(String username, String other) {
-		//if (!this.isFriendsWith(username, other)) return new Boolean(false);
-		GetAttributesResult result = db.getAttributes(
-				new GetAttributesRequest(Names.USERS, username));
-		List<Attribute> attributeList = result.getAttributes();
-		List<Attribute> toBeDeleted = new ArrayList<Attribute>();
-		for (Attribute a : attributeList) {
-			if (a.getName().equals(Names.FRIEND)){
-				System.out.println("Found friend: " + a.getValue());
-				if (a.getValue().equals(other)) {
-					System.out.println("Going to delete : " + a.getValue());
-					toBeDeleted.add(a);
-				}
+		GetAttributesResult result = 
+				db.getAttributes(new GetAttributesRequest(Names.FRIENDS, username));
+		List<Attribute> friends = result.getAttributes();
+		for (Attribute friend : friends) {
+			if (friend.getName().equals(other)) {
+				friend.setValue("false");
+				return new Boolean(true);
 			}
-				
 		}
-		db.deleteAttributes(new DeleteAttributesRequest(Names.USERS, Names.FRIEND, toBeDeleted,
-				new UpdateCondition()));
-		return new Boolean(true);
+		return new Boolean(false);
 	}
 	
 	private List<String> getAllWallPostIDs() {

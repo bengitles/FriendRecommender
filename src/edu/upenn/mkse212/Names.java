@@ -12,7 +12,6 @@ public class Names {
 	public static final String INTERESTS = "interests";
 	public static final String EMAIL = "email";
 	public static final String AFFILIATION = "affiliation";
-	public static final String FRIEND = "friend";
 	
 	
 	public static final String WALL = "wallposts";
@@ -23,6 +22,8 @@ public class Names {
 	public static final String COMMENT = "comment";
 	public static final String NUM_COMMENTS = "numComments";
 	public static final String POST_ID_NUM = "postIdNumber";
+	
+	public static final String FRIENDS = "friends"; //This is used to query the friends database
 	
 	public static final String FOLLOW_STATUS = "followStatus";
 	//The following are Item name fields for the Domain "wallposts"

@@ -38,7 +38,7 @@ public class FileCreator {
 		});
 		
 		for (final String user : friends.keySet()) {
-			db.getValues(user, Names.FRIEND, new AsyncCallback<List<String>>() {
+			db.getFriendsOf(user, new AsyncCallback<List<String>>() {
 				@Override
 				public void onFailure(Throwable arg0) {
 					System.out.println("Cannot communicate with server");
