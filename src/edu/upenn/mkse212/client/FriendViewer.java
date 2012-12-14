@@ -39,17 +39,18 @@ public class FriendViewer {
 	private final PennBook parent;
 	private String user;
 	
-	public FriendViewer(PennBook parent, String user) {
+	public FriendViewer(PennBook parent) {
 		this.parent = parent;
-		this.user = user;
 	}
 	
-	void display() {
+	void display(String user) {
+		this.user = user;
 		if (RootPanel.get("content") == null) System.out.print("null");
 		drawNodeAndNeighbors();
 	}
 	
 	public void drawNodeAndNeighbors() {
+		
 		final FriendViewer fv = this;
 		DatabaseAsync db = new Database.Util().getInstance();
 		
