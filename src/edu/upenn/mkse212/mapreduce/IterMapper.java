@@ -13,7 +13,8 @@ public class IterMapper extends Mapper<LongWritable, Text, Text, Text> {
 		String node = all[0];
 		String[] sendTo = all[1].split(" ");
 		String tag = all[2];
-		Double amount = Double.parseDouble(all[3]);
+		Double amount = 0.0;
+		if (all.length >= 4) amount = Double.parseDouble(all[3]);
 		for (int i = 0; i < sendTo.length; i++) {
 			context.write(new Text(sendTo[i]),
 					new Text(tag + "\t" + (amount / sendTo.length)));
