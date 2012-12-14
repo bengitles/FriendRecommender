@@ -1,6 +1,7 @@
 package edu.upenn.mkse212.mapreduce;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 
@@ -9,6 +10,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.DoubleWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
@@ -41,14 +43,33 @@ public class FriendRecDriver {
 		job.setReducerClass(InitReducer.class);
 		
 		job.setMapOutputKeyClass(Text.class);
-		job.setMapOutputValueClass(Text.class);
+		job.setMapOutputValueClass(DoubleWritable.class);
+		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(DoubleWritable.class);
+		
+		job.setNumReduceTasks(Integer.parseInt(numReducers));
+		job.waitForCompletion(true);
+	}
+	
+	static void iter(String inputDir, String outputDir, String numReducers) throws Exception {
+		Job job = new Job();
+		job.setJarByClass(FriendRecDriver.class);
+		
+		FileInputFormat.addInputPath(job, new Path(inputDir));
+		FileOutputFormat.setOutputPath(job, new Path(outputDir));
+		
+		job.setMapperClass(IterMapper.class);
+		job.setReducerClass(IterReducer.class);
 		
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
-	}
-	
-	static void iter(String inputDir, String outputDir, String numReducers) {
 		
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
+		
+		job.setNumReduceTasks(Integer.parseInt(numReducers));
+		job.waitForCompletion(true);
 	}
 	
 	  static void diff(String inputDir1, String inputDir2, String outputDir)
@@ -56,17 +77,84 @@ public class FriendRecDriver {
 		  diff(inputDir1, inputDir2, outputDir, "1");
 	  }
 	
-	static void diff(String inputDir, String iterDir1, String iterDir2, String numReducers) {
+	static void diff(String inputDir1, String inputDir2, String outputDir, String numReducers)
+					throws Exception {
+		Job job = new Job();
+		job.setJarByClass(FriendRecDriver.class);
 		
+		FileInputFormat.addInputPath(job, new Path(inputDir1));
+		FileInputFormat.addInputPath(job, new Path(inputDir2));
+		FileOutputFormat.setOutputPath(job, new Path(outputDir+ "_interm"));
+		
+		job.setMapperClass(DiffMapper.class);
+		job.setReducerClass(DiffReducer.class);
+		
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(DoubleWritable.class);
+		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(DoubleWritable.class);
+		job.waitForCompletion(true);
+		
+		//Run a second job to determine the biggest difference in rank from
+		//one iteration to the next.
+		job = new Job();
+		job.setJarByClass(FriendRecDriver.class);
+		
+		FileInputFormat.addInputPath(job, new Path(outputDir + "_interm"));
+		FileOutputFormat.setOutputPath(job, new Path(outputDir));
+		
+		job.setMapperClass(DiffMapper2.class);
+		job.setReducerClass(DiffReducer2.class);
+		
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(DoubleWritable.class);
+		
+		job.setOutputKeyClass(DoubleWritable.class);
+		job.setOutputValueClass(Text.class);
+		
+		job.setNumReduceTasks(Integer.parseInt(numReducers));
+		
+		job.waitForCompletion(true);
+		deleteDirectory(outputDir + "_interm");
 	}
 	
-	static void finish(String inputDir, String outputDir, String numReducers) {
+	static void finish(String inputDir, String outputDir, String numReducers) throws Exception {
+		Job job = new Job();
+		job.setJarByClass(FriendRecDriver.class);
 		
+		FileInputFormat.addInputPath(job, new Path(inputDir));
+		FileOutputFormat.setOutputPath(job, new Path(outputDir));
+		
+		job.setMapperClass(FinishMapper.class);
+		job.setReducerClass(FinishReducer.class);
+		
+		job.setOutputKeyClass(Text.class);
+		job.setOutputValueClass(Text.class);
+		
+		job.setMapOutputKeyClass(Text.class);
+		job.setMapOutputValueClass(Text.class);
+		
+		job.setNumReduceTasks(1);
+		job.waitForCompletion(true);
 	}
 	
 	static void composite(String inputDir, String outputDir, String intermDir1,
-			  String intermDir2, String diffDir, String numReducers) {
-		
+			  String intermDir2, String diffDir, String numReducers) throws Exception {
+		  init(inputDir, intermDir1, numReducers);
+		  iter(intermDir1, intermDir2, numReducers);
+		  deleteDirectory(intermDir1);
+		  iter(intermDir2, intermDir1, numReducers);
+		  diff(intermDir1, intermDir2, diffDir);
+		  while(readDiffResult(diffDir) > 0.001) {
+			  deleteDirectory(intermDir2);
+			  iter(intermDir1, intermDir2, numReducers);
+			  deleteDirectory(intermDir1);
+			  iter(intermDir2, intermDir1, numReducers);
+			  deleteDirectory(diffDir);
+			  diff(intermDir1, intermDir2, diffDir);
+		  }
+		  finish(intermDir1, outputDir, numReducers);
 	}
 
 	
@@ -99,7 +187,6 @@ public class FriendRecDriver {
 					}
 			  }
 		}
-		
 		fs.close();
 		return diffnum;
 	}

@@ -1,0 +1,5 @@
+A	Af1
+B	Af2
+C	Af2
+D	Af3
+E	Af3
