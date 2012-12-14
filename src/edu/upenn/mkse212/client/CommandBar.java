@@ -26,9 +26,11 @@ public class CommandBar {
 	private final PennBook parent;
 	private AbsolutePanel p;
 	private String username;
+	private final HashMap<String,StringBuilder> oracleMap;
 	
 	public CommandBar(PennBook parent) {
 		this.parent = parent;
+		oracleMap = new HashMap<String,StringBuilder>();
 	}
 	
 	void display(final String username) {
@@ -53,7 +55,6 @@ public class CommandBar {
 		});
 		
 		// Add search bar
-		final HashMap<String,StringBuilder> oracleMap = new HashMap<String,StringBuilder>();
 		final HashMap<String,String> reverseMap = new HashMap<String,String>();
 		final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 		
@@ -209,5 +210,7 @@ public class CommandBar {
 	void hide() {parent.getDockPanel().remove(p);}
 	
 	String getUser() {return username;}
+	
+	HashMap<String,StringBuilder> getMap() {return oracleMap;}
 
 }

@@ -12,6 +12,7 @@ public class Names {
 	public static final String INTERESTS = "interests";
 	public static final String EMAIL = "email";
 	public static final String AFFILIATION = "affiliation";
+	public static final String STATUS = "status";
 	
 	
 	public static final String WALL = "wallposts";
