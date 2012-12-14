@@ -1,7 +1,6 @@
 package edu.upenn.mkse212.mapreduce;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
 
@@ -16,8 +15,8 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 
-
-public class FriendRecDriver {
+public class FriendRecDriver
+{
 	public static void main(String args[]) throws Exception {
 		  if(args[0].equals("init")) init(args[1], args[2], args[3]);
 		  if(args[0].equals("iter")) iter(args[1], args[2], args[3]);
