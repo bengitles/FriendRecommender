@@ -252,8 +252,14 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 		List<Attribute> attributeList = result.getAttributes();
 		List<Attribute> toBeDeleted = new ArrayList<Attribute>();
 		for (Attribute a : attributeList) {
-			if (a.getName().equals(Names.FRIEND) && a.getValue().equals(other))
-				toBeDeleted.add(a);
+			if (a.getName().equals(Names.FRIEND)){
+				System.out.println("Found friend: " + a.getValue());
+				if (a.getValue().equals(other)) {
+					System.out.println("Going to delete : " + a.getValue());
+					toBeDeleted.add(a);
+				}
+			}
+				
 		}
 		db.deleteAttributes(new DeleteAttributesRequest(Names.USERS, Names.FRIEND, toBeDeleted,
 				new UpdateCondition()));
