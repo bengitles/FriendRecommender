@@ -27,6 +27,7 @@ public class FinishReducer extends Reducer<Text, Text, Text, Text> {
 					}
 		});
 		for (Text t : values) sortedTags.add(t.toString().split("\t"));
+		
 		while(!sortedTags.isEmpty()) {
 			String[] tagAndAmount = sortedTags.poll();
 			StringBuffer sb = new StringBuffer(tagAndAmount[0]);
