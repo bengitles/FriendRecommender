@@ -39,7 +39,7 @@ public class CommandBar {
 		p = new AbsolutePanel();
 		
 		// Set size of CommandBar
-		p.setWidth("700px");
+		p.setWidth("900px");
 		p.setHeight("70px");
 		
 		// Add logo
