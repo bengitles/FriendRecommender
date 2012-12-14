@@ -164,8 +164,11 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	
 	public List<String> getUsers(String prefix) {
 		List<String> list = new ArrayList<String>();
+		StringBuffer selectExpression = new StringBuffer("SELECT * FROM '");
+		selectExpression.append(Names.USERS);
+		selectExpression.append("'");
 		SelectResult result = db.select(new SelectRequest(
-				"SELECT * FROM " + Names.USERS));
+				selectExpression.toString()));
 		for (Item i : result.getItems()) {
 			String name = i.getName();
 			if (name.startsWith(prefix)) list.add(i.getName());
@@ -250,6 +253,16 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 		return new Boolean(true);
 	}
 	
+	private List<String> getAllWallPostIDs() {
+		StringBuffer selectExpression = new StringBuffer("SELECT * FROM '");
+		selectExpression.append(Names.WALL);
+		SelectResult result = db.select(new SelectRequest(
+				selectExpression.toString()));
+		List<String> ids = new ArrayList<String>();
+		for (Item i : result.getItems()) ids.add(i.getName());
+		return ids;
+	}
+	
 	/*
 	 * Puts the content of the post, a reference to the sender (username), and
 	 * a reference to the receiver to the database. Returns the wallPostID.
@@ -260,19 +273,20 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	@Override
 	public String postOnWall(String username, String other, String content) {
 		if (content.trim().equals("")) return null;
-		SelectResult result = db.select(new SelectRequest(
-				"SELECT * FROM '" + Names.WALL + "' WHERE " + 
-						Names.RECEIVER + " = '" + other + "'").withConsistentRead(true));
-		int numPosts = 0;
-		if (result.getItems()!=null) numPosts = result.getItems().size(); 
-		String id = username + Names.TO + other + Names.ID + (numPosts +1);
+		
+		int numPosts = this.getAllWallPostIDs().size(); 
+		StringBuffer id = new StringBuffer(username);
+		id.append(Names.TO);
+		id.append(other);
+		id.append(Names.ID);
+		id.append(numPosts+1);
 		
 		List<ReplaceableAttribute> list = new ArrayList<ReplaceableAttribute>();
 		list.add(new ReplaceableAttribute(Names.POST, content, false));
 		list.add(new ReplaceableAttribute(Names.SENDER, username, false));
 		list.add(new ReplaceableAttribute(Names.RECEIVER, other, false));
 		list.add(new ReplaceableAttribute(Names.POST_ID_NUM, ""+(numPosts + 1), false));
-		db.putAttributes(new PutAttributesRequest(Names.WALL, id, list,
+		db.putAttributes(new PutAttributesRequest(Names.WALL, id.toString(), list,
 				new UpdateCondition()));
 		return new String(id);
 	}
@@ -310,24 +324,27 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 
 	@Override
 	public List<String> getWallPostsIDs(String receiver) {
-		SelectResult result = db.select(new SelectRequest(
-				"SELECT * FROM " + Names.WALL + " WHERE " + Names.RECEIVER +
-				" = " + receiver));
-		Queue<Item> pq = new PriorityQueue<Item>(result.getItems().size(),
-				new Comparator<Item>() {
+		List<String> allIDs = this.getAllWallPostIDs();
+		List<String> theseIDs = new ArrayList<String>();
+		for(String id : allIDs) {
+			if (this.getWallPostInfo(id)[2].equals(receiver))
+				theseIDs.add(id);
+		}
+		Queue<String> pq = new PriorityQueue<String>(theseIDs.size(),
+				new Comparator<String>() {
 					@Override
-					public int compare(Item arg0, Item arg1) {
+					public int compare(String arg0, String arg1) {
 						int numPost0 = Integer.parseInt(
-								parseWallPostID(arg0.getName()).get(2));
+								getWallPostInfo(arg0)[2]);
 						int numPost1 = Integer.parseInt(
-								parseWallPostID(arg1.getName()).get(2));
+								getWallPostInfo(arg1)[2]);
 						return numPost1 - numPost0;
 					}
 		}); //This comparator sorts the wall posts from most recent to oldest
-		pq.addAll(result.getItems());
+		pq.addAll(theseIDs);
 		List<String> posts = new ArrayList<String>();
 		while (!pq.isEmpty())
-			posts.add(this.getWallPost(pq.poll().getName()));
+			posts.add(this.getWallPost(pq.poll()));
 		
 		return posts;
 	}
@@ -377,7 +394,12 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	 * commentqxz[commenter]qxz[comment number on the wall post]
 	 */
 	private String createCommentID(String commenter, Integer numComment) {
-		return "comment" + Names.SEPARATOR + commenter + Names.SEPARATOR + numComment;
+		StringBuffer sb = new StringBuffer(Names.COMMENT);
+		sb.append(Names.SEPARATOR);
+		sb.append(commenter);
+		sb.append(Names.SEPARATOR);
+		sb.append(numComment);
+		return sb.toString();
 	}
 	
 	//Returns the number of comments on the wall post associated with the wallPostID
