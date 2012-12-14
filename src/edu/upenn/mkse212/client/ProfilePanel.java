@@ -153,7 +153,7 @@ public class ProfilePanel {
 	
 		// Update DockPanel
 		panel.selectTab(0);
-		parent.getDockPanel().add(panel,DockPanel.CENTER);
+		parent.getDockPanel().add(panel,DockPanel.EAST);
 	}
 	
 	void hide() {

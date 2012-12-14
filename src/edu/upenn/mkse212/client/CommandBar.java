@@ -17,6 +17,8 @@ import com.google.gwt.user.client.ui.MultiWordSuggestOracle;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.SuggestBox;
 
+import edu.upenn.mkse212.Names;
+
 public class CommandBar {
 	private final PennBook parent;
 	private AbsolutePanel p;
@@ -49,8 +51,6 @@ public class CommandBar {
 		
 		// Add search bar
 		final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
-		oracle.add("Ben Gitles");
-		oracle.add("Drew Trager");
 		
 		SuggestBox sbox = new SuggestBox(oracle);
 		sbox.setWidth("250px");
@@ -114,7 +114,7 @@ public class CommandBar {
 		DOM.setStyleAttribute(logout.getElement(), "textAlign", "center");
 		logout.setWidth("60px");
 		
-		// Add Clickhander to button
+		// Add ClickHandler to button
 		logout.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
@@ -129,6 +129,31 @@ public class CommandBar {
 		});
 		
 		p.add(logout,630,15);
+		
+		// Get user's first name
+		final StringBuilder sb = new StringBuilder();
+		parent.getDatabaseService().getValue(username, Names.FIRST_NAME, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				parent.popupBox("RPC failure", "Cannot communicate with the server");
+			}
+			@Override
+			public void onSuccess(String result) {
+				sb.append(result + " ");
+			}
+		});
+		
+		// Get user's last name
+		parent.getDatabaseService().getValue(username, Names.LAST_NAME, new AsyncCallback<String>() {
+			@Override
+			public void onFailure(Throwable caught) {
+				parent.popupBox("RPC failure", "Cannot communicate with the server");
+			}
+			@Override
+			public void onSuccess(String result) {
+				menu.setText(sb.append(result).toString());
+			}
+		});
 		
 		// Add panel to DockPanel
 		parent.getDockPanel().add(p,DockPanel.NORTH);
