@@ -29,6 +29,9 @@ import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 
 import edu.upenn.mkse212.client.FriendVisualization;
+import edu.upenn.mkse212.client.FriendViewer;
+import edu.upenn.mkse212.client.GetFriendsFor;
+import edu.upenn.mkse212.client.GetFriendsForAsync;
 
 /**
  * Entry point classes define <code>onModuleLoad()</code>.
@@ -42,31 +45,46 @@ public class FriendViewer {
 		this.parent = parent;
 	}
 	
-	void display(String user) {
-		this.user = user;
+	public void onModuleLoad() {
 		if (RootPanel.get("content") == null) System.out.print("null");
-		drawNodeAndNeighbors();
+		
+		Label l = new Label("Query for user by ID: ");
+		RootPanel.get("content").add(l);
+		
+		Button queryButton = new Button();
+		RootPanel.get("content").add(queryButton);
+		queryButton.setText("Submit");
+		
+		final TextBox box = new TextBox();
+		RootPanel.get("content").add(box);
+		
+		//When a node is clicked, show its neighbors.
+		queryButton.addClickHandler(new ClickHandler(){
+			public void onClick(ClickEvent event) {
+				// Call a method to fetch the list of friends
+				// & display them
+				drawNodeAndNeighbors(box.getText());
+			}
+		});
 	}
 	
-	public void drawNodeAndNeighbors() {
+	public void drawNodeAndNeighbors(final String text) {
 		
 		final FriendViewer fv = this;
-		DatabaseAsync db = new Database.Util().getInstance();
+		GetFriendsForAsync friendService = new GetFriendsFor.Util().getInstance();
 		
-		db.getFriendsOf(this.user, new AsyncCallback<List<String>>() {
-			@Override
-			public void onFailure(Throwable arg0) {
-				parent.popupBox("RPC failure", "Cannot communicate with the server");
+		friendService.getFriendsList(text, new AsyncCallback<Set<String>>() {
+			public void onFailure(Throwable caught) {
+				Window.alert("Unable to talk to server");
 			}
-			@Override
-			public void onSuccess(List<String> result) {
+			public void onSuccess(Set<String> result) {
 				// Visualize the results!
 				//This StringBuffer creates the JSON string
 				StringBuffer sb = new StringBuffer();
 				sb.append("{\"id\": \"");
-				sb.append(user);
+				sb.append(text);
 				sb.append("\", \"name\": \"");
-				sb.append(user);
+				sb.append(text);
 				sb.append("\", \"children\": [\n");
 				boolean isFirstOne = true;
 				for(String friend : result) {
