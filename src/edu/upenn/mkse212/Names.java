@@ -30,4 +30,6 @@ public class Names {
 	public static final String ID = SEPARATOR + "id" + SEPARATOR;
 	
 	public static final String EC2_NAME = "ec2-107-22-89-85.compute-1.amazonaws.com";
+	
+	public static final String OUTGOING_EDGES = "outgoingEdges";
 }
