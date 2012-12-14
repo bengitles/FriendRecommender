@@ -38,12 +38,6 @@ import edu.upenn.mkse212.client.GetFriendsForAsync;
  */
 public class FriendViewer {
 	private JavaScriptObject j;
-	private final PennBook parent;
-	private String user;
-	
-	public FriendViewer(PennBook parent) {
-		this.parent = parent;
-	}
 	
 	public void onModuleLoad() {
 		if (RootPanel.get("content") == null) System.out.print("null");
