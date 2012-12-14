@@ -42,10 +42,10 @@ public class FriendRecDriver
 		job.setReducerClass(InitReducer.class);
 		
 		job.setMapOutputKeyClass(Text.class);
-		job.setMapOutputValueClass(DoubleWritable.class);
+		job.setMapOutputValueClass(Text.class);
 		
 		job.setOutputKeyClass(Text.class);
-		job.setOutputValueClass(DoubleWritable.class);
+		job.setOutputValueClass(Text.class);
 		
 		job.setNumReduceTasks(Integer.parseInt(numReducers));
 		job.waitForCompletion(true);
