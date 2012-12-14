@@ -414,30 +414,6 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 		return new Integer(0);
 	}
 	
-	// Updates the follow status of user1 to user2
-	@Override
-	public String updateFollowStatus(String user1, String user2, Boolean b) {
-		List<ReplaceableAttribute> attributeList = new ArrayList<ReplaceableAttribute>();
-		attributeList.add(new ReplaceableAttribute(Names.RELATION, b.toString(), true));
-		db.putAttributes(new PutAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2, attributeList,
-				new UpdateCondition()));
-		return new String("true");
-	}
-	
-	// Returns the follow status of user1 to user2
-	@Override
-	public String getFollowStatus(String user1, String user2) {
-		GetAttributesResult result = 
-				db.getAttributes(new GetAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2));
-		System.out.println("Test");
-		List<Attribute> attributes = result.getAttributes();
-		for (Attribute a : attributes) {
-			if (a.getName().equals(Names.RELATION))
-				return new String(a.getValue());
-		}
-		return new String("false");
-	}
-	
 }
 
 /*
@@ -486,3 +462,28 @@ public List<String> getWallPostsIDs(String username, String other) {
 		list.add(i.getName());
 	return new ArrayList<String>(list);
 }*/
+
+/*
+@Override
+public String updateFollowStatus(String user1, String user2, Boolean b) {
+	List<ReplaceableAttribute> attributeList = new ArrayList<ReplaceableAttribute>();
+	attributeList.add(new ReplaceableAttribute(Names.RELATION, b.toString(), true));
+	db.putAttributes(new PutAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2, attributeList,
+			new UpdateCondition()));
+	return new String("true");
+}
+
+
+@Override
+public String getFollowStatus(String user1, String user2) {
+	GetAttributesResult result = 
+			db.getAttributes(new GetAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2));
+	System.out.println("Test");
+	List<Attribute> attributes = result.getAttributes();
+	for (Attribute a : attributes) {
+		if (a.getName().equals(Names.RELATION))
+			return new String(a.getValue());
+	}
+	return new String("false");
+}
+*/
