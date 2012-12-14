@@ -65,7 +65,7 @@ public class SideProfilePanel {
 				
 				@Override
 				public void onSuccess(List<String> results) {
-					if (isFollowing) {
+					if (results.contains(username)) {
 						PushButton button3 = new PushButton("Unfollow");
 						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
 						button3.setWidth("120px");
