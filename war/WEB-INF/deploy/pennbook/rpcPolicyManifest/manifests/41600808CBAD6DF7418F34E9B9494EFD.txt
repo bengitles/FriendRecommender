@@ -1,0 +1,2 @@
+serviceClass: edu.upenn.mkse212.client.Database
+path: DD141354485485049BF06901BD08BFE6.gwt.rpc

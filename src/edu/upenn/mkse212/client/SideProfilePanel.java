@@ -17,7 +17,7 @@ public class SideProfilePanel {
 		this.parent = parent;
 	}
 	
-	void display(String username) {
+	void display(final String username) {
 		// Initlize the panel
 		p = new AbsolutePanel();
 		p.setWidth("150px");
@@ -46,16 +46,37 @@ public class SideProfilePanel {
 		button2.setWidth("120px");
 		p.add(button2,10,210);
 		
+		
 		if (parent.getNavigationBar().getUser().equals(username)) {
 			PushButton button3 = new PushButton("Edit Profile");
 			DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
 			button3.setWidth("120px");
 			p.add(button3,10,240);
 		} else {
-			PushButton button3 = new PushButton("Follow");
-			DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
-			button3.setWidth("120px");
-			p.add(button3,10,240);
+			parent.getDatabaseService().getFollowStatus(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
+				@Override
+				public void onFailure(Throwable caught) {
+					System.out.println(parent.getNavigationBar().getUser());
+					System.out.println(username);
+					parent.popupBox("RPC failure", "Cannot communicate with the server");
+				}
+				
+				
+				@Override
+				public void onSuccess(Boolean b) {
+					if (b == true) {
+						PushButton button3 = new PushButton("Unfollow");
+						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
+						button3.setWidth("120px");
+						p.add(button3,10,240);
+					} else {
+						PushButton button3 = new PushButton("Follow");
+						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
+						button3.setWidth("120px");
+						p.add(button3,10,240);
+					}
+				}
+			});
 		}
 		
 		// Get user's first name

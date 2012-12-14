@@ -429,10 +429,11 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 	public Boolean getFollowStatus(String user1, String user2) {
 		GetAttributesResult result = 
 				db.getAttributes(new GetAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2));
+		System.out.println("Test");
 		List<Attribute> attributes = result.getAttributes();
 		for (Attribute a : attributes) {
 			if (a.getName().equals(Names.RELATION))
-				return new Boolean(a.getName());
+				return new Boolean(a.getValue());
 		}
 		return new Boolean(false);
 	}
