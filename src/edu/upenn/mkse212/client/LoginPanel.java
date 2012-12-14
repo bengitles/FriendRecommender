@@ -11,6 +11,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.PasswordTextBox;
 import com.google.gwt.user.client.ui.TextBox;
 
+import edu.upenn.mkse212.Names;
+
 public class LoginPanel {
 	private final PennBook parent;
 	private AbsolutePanel p;
@@ -55,13 +57,23 @@ public class LoginPanel {
 						if (!result.booleanValue()) {
 							parent.popupBox("Error", "Login incorrect");
 						} else {
+							parent.getDatabaseService().putAttribute(username, Names.STATUS, "online", new AsyncCallback<Boolean>() {
+								@Override
+								public void onFailure(Throwable arg0) {
+									parent.popupBox("RPC failure", "Cannot communicate with the server");
+								}
+								@Override
+								public void onSuccess(Boolean arg0) {
+									// TODO Auto-generated method stub
+								}
+							});
 							parent.getLoginPanel().hide();
 							parent.getUserPanel().hide();
 							parent.getWelcomeBar().hide();
 							parent.getNavigationBar().display(username);
 							parent.getSidePanel().display(username);
+							parent.getOnlineBar().display(username);
 							parent.getWallPanel().display(username);
-							parent.getOnlineBar().display();
 						}
 					}
 				});
@@ -75,13 +87,24 @@ public class LoginPanel {
 		debug.addClickHandler(new ClickHandler() {
 			public void onClick(ClickEvent event) {
 				String username = "arnold.palmer@pga.com";
+				parent.getDatabaseService().putAttribute(username, Names.STATUS, "online", new AsyncCallback<Boolean>() {
+					@Override
+					public void onFailure(Throwable arg0) {
+						parent.popupBox("RPC failure", "Cannot communicate with the server");
+					}
+					@Override
+					public void onSuccess(Boolean arg0) {
+						// TODO Auto-generated method stub
+					}
+				});
 				parent.getLoginPanel().hide();
 				parent.getUserPanel().hide();
 				parent.getWelcomeBar().hide();
 				parent.getNavigationBar().display(username);
 				parent.getSidePanel().display(username);
+				parent.getOnlineBar().display(username);
 				parent.getWallPanel().display(username);
-				parent.getOnlineBar().display();
+				
 			}
 		});
 	}

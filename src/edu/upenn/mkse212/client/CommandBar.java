@@ -105,9 +105,11 @@ public class CommandBar {
 				if (arg0.getNativeKeyCode() == 13 && (reverseMap.containsKey(sbox.getText()))) {
 					String other = reverseMap.get(sbox.getText());
 					if (!other.equals(null)) {
+						parent.getOnlineBar().hide();
 						parent.getSidePanel().hide();
 						parent.getWallPanel().hide();
 						parent.getEditPanel().hide();
+						parent.getOnlineBar().display(other);
 						parent.getSidePanel().display(other);
 						parent.getWallPanel().display(other);
 						sbox.setText("");
@@ -124,9 +126,11 @@ public class CommandBar {
 		options.addItem("View Profile", new Command() {
 			public void execute() {
 				popup.hide();
+				parent.getOnlineBar().hide();
 				parent.getSidePanel().hide();
 				parent.getWallPanel().hide();
 				parent.getEditPanel().hide();
+				parent.getOnlineBar().display(username);
 				parent.getSidePanel().display(username);
 				parent.getWallPanel().display(username);
 			}
@@ -141,9 +145,11 @@ public class CommandBar {
 		options.addItem("Edit Profile", new Command() {
 			public void execute() {
 				popup.hide();
+				parent.getOnlineBar().hide();
 				parent.getSidePanel().hide();
 				parent.getEditPanel().hide();
 				parent.getWallPanel().hide();
+				parent.getOnlineBar().display(username);
 				parent.getSidePanel().display(username);
 				parent.getEditPanel().display(username);
 			}
@@ -159,7 +165,7 @@ public class CommandBar {
 			}
 		});
 		
-		p.add(menu,470,15);
+		p.add(menu,670,15);
 		
 		// Add logout button
 		Button logout = new Button("Logout");
@@ -170,14 +176,28 @@ public class CommandBar {
 		logout.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
+				parent.getDatabaseService().putAttribute(username, Names.STATUS, "offline", new AsyncCallback<Boolean>() {
+					@Override
+					public void onFailure(Throwable arg0) {
+						parent.popupBox("RPC failure", "Cannot communicate with the server");
+					}
+					@Override
+					public void onSuccess(Boolean arg0) {
+						// TODO Auto-generated method stub
+					}
+				});
 				parent.getNavigationBar().hide();
+				parent.getSidePanel().hide();
+				parent.getOnlineBar().hide();
+				parent.getWallPanel().hide();
+				parent.getEditPanel().hide();
 				parent.getWelcomeBar().display();
 				parent.getLoginPanel().display();
 				parent.getUserPanel().display();
 			}
 		});
 		
-		p.add(logout,630,15);
+		p.add(logout,830,15);
 		
 		// Get user's first name
 		final StringBuilder sb = new StringBuilder();
