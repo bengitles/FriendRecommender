@@ -289,6 +289,47 @@ public class EditProfilePanel {
 			}
 		});
 		
+		/*--------------------List of Friends Tab--------------------*/
+		AbsolutePanel friendsPanel = new AbsolutePanel();
+		friendsPanel.setWidth("500px");
+		friendsPanel.setHeight("400px");
+		panel.add(friendsPanel,"Friends");
+		
+		final List<Label> list = new ArrayList<Label>();
+		db.getFriendsOf(username, new AsyncCallback<List<String>>() {
+			@Override
+			public void onFailure(Throwable arg0) {
+				parent.popupBox("RPC failure", "Cannot communicate with the server");
+			}
+
+			@Override
+			public void onSuccess(List<String> friends) {
+				for (final String friend : friends) {
+					db.getValue(friend, Names.FIRST_NAME, new AsyncCallback<String>() {
+						@Override
+						public void onFailure(Throwable arg0) {
+							parent.popupBox("RPC failure", "Cannot communicate with the server");
+						}
+						@Override
+						public void onSuccess(final String firstName) {
+							db.getValue(friend, Names.LAST_NAME, new AsyncCallback<String>() {
+								@Override
+								public void onFailure(Throwable arg0) {
+									parent.popupBox("RPC failure", "Cannot communicate with the server");
+								}
+								@Override
+								public void onSuccess(String lastName) {
+									list.add(new Label(firstName + " " + lastName));
+								}
+							});
+						}
+					});
+				}
+			}
+		});
+		friendsPanel.setHeight("" + (list.size()*10) + "px");
+		for (Label l : list) friendsPanel.add(l);
+		
 		// Update DockPanel
 		panel.selectTab(0);
 		parent.getDockPanel().add(panel,DockPanel.EAST);
