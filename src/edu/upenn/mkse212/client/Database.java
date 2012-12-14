@@ -69,7 +69,7 @@ public interface Database extends RemoteService {
 	String getWallPost(String wallPostID);
 	
 	String[] getWallPostInfo(String wallPostID);
-
+	
 	//List<String> getWallPostsIDs(String username, String other);
 	
 	List<String> getWallPostsIDs(String receiver);
