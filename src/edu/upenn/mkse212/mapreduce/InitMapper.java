@@ -15,6 +15,8 @@ public class InitMapper extends Mapper<LongWritable, Text, Text, Text> {
 		for (int i = 0; i < connections.length; i++) {
 			context.write(new Text(nameAndConnections[0]),
 					new Text(connections[i]));
+			context.write(new Text(connections[i]),
+					new Text(nameAndConnections[0]));
 		}
 	}
 }
