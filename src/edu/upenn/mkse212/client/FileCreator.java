@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.gwt.user.client.rpc.AsyncCallback;
+
 import edu.upenn.mkse212.Names;
 import edu.upenn.mkse212.server.DatabaseImpl;
 
@@ -15,27 +17,63 @@ import edu.upenn.mkse212.server.DatabaseImpl;
 public class FileCreator {
 	
 	public static void main (String[] args) throws IOException {
-		DatabaseAsync db = new Database.Util.getInstance();
+		DatabaseAsync db = new Database.Util().getInstance();
 		final Map<String, List<String>> friends = new HashMap<String, List<String>>();
 		final Map<String, List<String>> interests = new HashMap<String, List<String>>();
 		final Map<String, String> affiliation = new HashMap<String, String>();
 		
-		for (String user : db.getUsers("")) {
-			friends.put(user, new ArrayList<String>());
-			interests.put(user, new ArrayList<String>());
-			affiliation.put(user, "");
-		}
+		db.getUsers("", new AsyncCallback<List<String>>() {
+			@Override
+			public void onFailure(Throwable arg0) {
+				System.out.println("Cannot communicate with server");
+			}
+			@Override
+			public void onSuccess(List<String> result) {
+				for (String user : result) {
+					friends.put(user, new ArrayList<String>());
+					interests.put(user, new ArrayList<String>());
+					affiliation.put(user, "");
+				}
+			}
+		});
 		
 		for (final String user : friends.keySet()) {
-			friends.get(user).addAll(db.getValues(user, Names.FRIEND));
+			db.getValues(user, Names.FRIEND, new AsyncCallback<List<String>>() {
+				@Override
+				public void onFailure(Throwable arg0) {
+					System.out.println("Cannot communicate with server");
+				}
+				@Override
+				public void onSuccess(List<String> result) {
+					friends.get(user).addAll(result);
+				}
+			});
 		}
 		
 		for (final String user : interests.keySet()) {
-					interests.get(user).addAll(db.getValues(user, Names.INTERESTS));
+			db.getValues(user, Names.INTERESTS, new AsyncCallback<List<String>>() {
+				@Override
+				public void onFailure(Throwable arg0) {
+					System.out.println("Cannot communicate with server");
+				}
+				@Override
+				public void onSuccess(List<String> result) {
+					interests.get(user).addAll(result);
+				}
+			});
 		}
 		
 		for (final String user : affiliation.keySet()) {
-			affiliation.put(user, db.getValue(user, Names.AFFILIATION));
+			db.getValue(user, Names.AFFILIATION, new AsyncCallback<String>() {
+				@Override
+				public void onFailure(Throwable arg0) {
+					System.out.println("Cannot communicate with server");
+				}
+				@Override
+				public void onSuccess(String result) {
+					interests.get(user).add(result);
+				}
+			});
 		}
 		
 		BufferedWriter bw = new BufferedWriter(new FileWriter("friends.txt"));
