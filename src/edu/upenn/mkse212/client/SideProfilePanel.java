@@ -74,18 +74,7 @@ public class SideProfilePanel {
 						button3.addClickHandler(new ClickHandler() {
 							@Override
 							public void onClick(ClickEvent event) {
-								parent.getDatabaseService().deleteFriend(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
-									@Override
-									public void onFailure(Throwable caught) {
-										parent.popupBox("RPC failure", "Cannot communicate with the server");
-									}
-									
-									@Override
-									public void onSuccess(Boolean b) {
-										parent.getSidePanel().hide();
-										parent.getSidePanel().display(username);
-									}
-								});
+								// delete friend
 							}			
 						});
 					} else {
