@@ -85,7 +85,6 @@ public class SideProfilePanel {
 										parent.getSidePanel().hide();
 										parent.getSidePanel().display(username);
 									}
-									
 								});
 							}			
 						});
