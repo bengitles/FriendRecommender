@@ -34,7 +34,6 @@ import edu.upenn.mkse212.client.FriendVisualization;
  * Entry point classes define <code>onModuleLoad()</code>.
  */
 public class FriendViewer {
-	private Button clickMeButton;
 	private JavaScriptObject j;
 	private final PennBook parent;
 	private String user;
