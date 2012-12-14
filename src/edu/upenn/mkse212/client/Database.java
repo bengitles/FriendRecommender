@@ -17,6 +17,7 @@ package edu.upenn.mkse212.client;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 
@@ -68,6 +69,10 @@ public interface Database extends RemoteService {
 	String getWallPost(String wallPostID);
 	
 	String[] getWallPostInfo(String wallPostID);
+
+	Boolean updateFollowStatus(String user1, String user2, Boolean b);
+	
+	Boolean getFollowStatus(String user1, String user2);
 	
 	//List<String> getWallPostsIDs(String username, String other);
 	

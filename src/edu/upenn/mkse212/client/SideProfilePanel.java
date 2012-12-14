@@ -51,6 +51,11 @@ public class SideProfilePanel {
 			DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
 			button3.setWidth("120px");
 			p.add(button3,10,240);
+		} else {
+			PushButton button3 = new PushButton("Follow");
+			DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
+			button3.setWidth("120px");
+			p.add(button3,10,240);
 		}
 		
 		// Get user's first name

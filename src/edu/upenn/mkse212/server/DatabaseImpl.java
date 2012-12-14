@@ -413,6 +413,30 @@ public class DatabaseImpl extends RemoteServiceServlet implements Database {
 		}
 		return new Integer(0);
 	}
+	
+	// Updates the follow status of user1 to user2
+	@Override
+	public Boolean updateFollowStatus(String user1, String user2, Boolean b) {
+		List<ReplaceableAttribute> attributeList = new ArrayList<ReplaceableAttribute>();
+		attributeList.add(new ReplaceableAttribute(Names.RELATION, b.toString(), true));
+		db.putAttributes(new PutAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2, attributeList,
+				new UpdateCondition()));
+		return new Boolean(true);
+	}
+	
+	// Returns the follow status of user1 to user2
+	@Override
+	public Boolean getFollowStatus(String user1, String user2) {
+		GetAttributesResult result = 
+				db.getAttributes(new GetAttributesRequest(Names.FOLLOW_STATUS, user1 + "TO" + user2));
+		List<Attribute> attributes = result.getAttributes();
+		for (Attribute a : attributes) {
+			if (a.getName().equals(Names.RELATION))
+				return new Boolean(a.getName());
+		}
+		return new Boolean(false);
+	}
+	
 }
 
 /*

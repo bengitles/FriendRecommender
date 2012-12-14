@@ -24,6 +24,10 @@ public class Names {
 	public static final String NUM_COMMENTS = "numComments";
 	public static final String POST_ID_NUM = "postIdNumber";
 	
+	public static final String FOLLOW_STATUS = "followStatus";
+	//The following are Item name fields for the Domain "wallposts"
+	public static final String RELATION = "relation";
+	
 	//The following are used to encode and create IDs.
 	public static final String SEPARATOR = "qxz";
 	public static final String TO = SEPARATOR + "to" + SEPARATOR;
