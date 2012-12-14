@@ -1,9 +1,12 @@
 package edu.upenn.mkse212.client;
 
+import java.util.HashMap;
 import java.util.List;
 
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.event.dom.client.KeyDownHandler;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
@@ -50,9 +53,11 @@ public class CommandBar {
 		});
 		
 		// Add search bar
+		final HashMap<String,StringBuilder> oracleMap = new HashMap<String,StringBuilder>();
+		final HashMap<String,String> reverseMap = new HashMap<String,String>();
 		final MultiWordSuggestOracle oracle = new MultiWordSuggestOracle();
 		
-		SuggestBox sbox = new SuggestBox(oracle);
+		final SuggestBox sbox = new SuggestBox(oracle);
 		sbox.setWidth("250px");
 		p.add(sbox,150,10);
 				
@@ -63,11 +68,51 @@ public class CommandBar {
 					parent.popupBox("RPC failure", "Cannot communicate with the server");
 				}
 				@Override
-				public void onSuccess(List<String> result) {
-					for (String s : result) {
-						oracle.add(s);
+				public void onSuccess(List<String> usernames) {
+					for (final String user : usernames) {
+						oracleMap.put(user,new StringBuilder());
+						parent.getDatabaseService().getValue(user,Names.FIRST_NAME, new AsyncCallback<String>() {
+							@Override
+							public void onFailure(Throwable caught) {
+								parent.popupBox("RPC failure", "Cannot communicate with the server");
+							}
+							@Override
+							public void onSuccess(String firstname) {
+								oracleMap.get(user).append(firstname + " ");
+								parent.getDatabaseService().getValue(user,Names.LAST_NAME, new AsyncCallback<String>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										parent.popupBox("RPC failure", "Cannot communicate with the server");
+									}
+									@Override
+									public void onSuccess(String lastname) {
+										oracleMap.get(user).append(lastname);
+										reverseMap.put(oracleMap.get(user).toString(), user);
+										oracle.add(oracleMap.get(user).toString());
+									}
+								});
+							}
+						});
 					}
 				}
+		});
+		
+		// Go to other user profile
+		sbox.addKeyDownHandler(new KeyDownHandler() {
+			@Override
+			public void onKeyDown(KeyDownEvent arg0) {
+				if (arg0.getNativeKeyCode() == 13 && (reverseMap.containsKey(sbox.getText()))) {
+					String other = reverseMap.get(sbox.getText());
+					if (!other.equals(null)) {
+						parent.getSidePanel().hide();
+						parent.getWallPanel().hide();
+						parent.getEditPanel().hide();
+						parent.getSidePanel().display(other);
+						parent.getWallPanel().display(other);
+						sbox.setText("");
+					}
+				}	
+			}	
 		});
 		
 		// Add menu
@@ -78,7 +123,10 @@ public class CommandBar {
 		options.addItem("View Profile", new Command() {
 			public void execute() {
 				popup.hide();
+				parent.getSidePanel().hide();
+				parent.getWallPanel().hide();
 				parent.getEditPanel().hide();
+				parent.getSidePanel().display(username);
 				parent.getWallPanel().display(username);
 			}
 		});
@@ -92,7 +140,10 @@ public class CommandBar {
 		options.addItem("Edit Profile", new Command() {
 			public void execute() {
 				popup.hide();
+				parent.getSidePanel().hide();
+				parent.getEditPanel().hide();
 				parent.getWallPanel().hide();
+				parent.getSidePanel().display(username);
 				parent.getEditPanel().display(username);
 			}
 		});
@@ -118,10 +169,7 @@ public class CommandBar {
 		logout.addClickHandler(new ClickHandler() {
 			@Override
 			public void onClick(ClickEvent event) {
-				parent.getWallPanel().hide();
-				parent.getSidePanel().hide();
 				parent.getNavigationBar().hide();
-				parent.getEditPanel().hide();
 				parent.getWelcomeBar().display();
 				parent.getLoginPanel().display();
 				parent.getUserPanel().display();
@@ -140,18 +188,17 @@ public class CommandBar {
 			@Override
 			public void onSuccess(String result) {
 				sb.append(result + " ");
-			}
-		});
-		
-		// Get user's last name
-		parent.getDatabaseService().getValue(username, Names.LAST_NAME, new AsyncCallback<String>() {
-			@Override
-			public void onFailure(Throwable caught) {
-				parent.popupBox("RPC failure", "Cannot communicate with the server");
-			}
-			@Override
-			public void onSuccess(String result) {
-				menu.setText(sb.append(result).toString());
+				// Get user's last name
+				parent.getDatabaseService().getValue(username, Names.LAST_NAME, new AsyncCallback<String>() {
+					@Override
+					public void onFailure(Throwable caught) {
+						parent.popupBox("RPC failure", "Cannot communicate with the server");
+					}
+					@Override
+					public void onSuccess(String result) {
+						menu.setText(sb.append(result).toString());
+					}
+				});
 			}
 		});
 		

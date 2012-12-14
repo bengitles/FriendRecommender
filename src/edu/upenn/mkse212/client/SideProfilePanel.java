@@ -83,8 +83,6 @@ public class SideProfilePanel {
 	}
 	
 	void hide() {
-		parent.getDockPanel().remove(p);
+		if (p != null) {parent.getDockPanel().remove(p);}
 	}
-	
-
 }

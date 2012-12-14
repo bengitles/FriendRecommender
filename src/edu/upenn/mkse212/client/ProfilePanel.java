@@ -157,6 +157,6 @@ public class ProfilePanel {
 	}
 	
 	void hide() {
-		parent.getDockPanel().remove(panel);
+		if (panel != null) {parent.getDockPanel().remove(panel);}
 	}
 }
