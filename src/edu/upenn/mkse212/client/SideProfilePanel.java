@@ -1,5 +1,7 @@
 package edu.upenn.mkse212.client;
 
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.AbsolutePanel;
@@ -53,28 +55,61 @@ public class SideProfilePanel {
 			button3.setWidth("120px");
 			p.add(button3,10,240);
 		} else {
-			parent.getDatabaseService().getFollowStatus(parent.getNavigationBar().getUser(), username, new AsyncCallback<String>() {
+			parent.getDatabaseService().isFriendsWith(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
 				@Override
 				public void onFailure(Throwable caught) {
-					System.out.println(parent.getNavigationBar().getUser());
-					System.out.println(username);
 					parent.popupBox("RPC failure", "Cannot communicate with the server");
 				}
 				
-				
 				@Override
-				public void onSuccess(String result) {
-					Boolean b = new Boolean(result);
-					if (b == true) {
+				public void onSuccess(Boolean isFollowing) {
+					System.out.print(isFollowing);
+					if (isFollowing) {
 						PushButton button3 = new PushButton("Unfollow");
 						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
 						button3.setWidth("120px");
 						p.add(button3,10,240);
+						
+						button3.addClickHandler(new ClickHandler() {
+							@Override
+							public void onClick(ClickEvent event) {
+								parent.getDatabaseService().removeFriend(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										parent.popupBox("RPC failure", "Cannot communicate with the server");
+									}
+									
+									@Override
+									public void onSuccess(Boolean b) {
+										parent.getSidePanel().hide();
+										parent.getSidePanel().display(username);
+									}
+								});
+							}			
+						});
 					} else {
 						PushButton button3 = new PushButton("Follow");
 						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
 						button3.setWidth("120px");
 						p.add(button3,10,240);
+						
+						button3.addClickHandler(new ClickHandler() {
+							@Override
+							public void onClick(ClickEvent event) {
+								parent.getDatabaseService().addFriend(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
+									@Override
+									public void onFailure(Throwable caught) {
+										parent.popupBox("RPC failure", "Cannot communicate with the server");
+									}
+									
+									@Override
+									public void onSuccess(Boolean b) {
+										parent.getSidePanel().hide();
+										parent.getSidePanel().display(username);
+									}
+								});
+							}			
+						});
 					}
 				}
 			});
