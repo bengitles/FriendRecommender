@@ -57,15 +57,15 @@ public class SideProfilePanel {
 			button3.setWidth("120px");
 			p.add(button3,10,240);
 		} else {
-			parent.getDatabaseService().getValues(parent.getNavigationBar().getUser(), Names.FRIEND, new AsyncCallback<List<String>>() {
+			parent.getDatabaseService().isFriendsWith(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					parent.popupBox("RPC failure", "Cannot communicate with the server");
 				}
 				
 				@Override
-				public void onSuccess(List<String> results) {
-					if (results.contains(username)) {
+				public void onSuccess(Boolean isFollower) {
+					if (isFollower) {
 						PushButton button3 = new PushButton("Unfollow");
 						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");
 						button3.setWidth("120px");
@@ -74,7 +74,19 @@ public class SideProfilePanel {
 						button3.addClickHandler(new ClickHandler() {
 							@Override
 							public void onClick(ClickEvent event) {
-								// delete friend
+								parent.getDatabaseService().removeFriend(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
+
+									@Override
+									public void onFailure(Throwable arg0) {
+										parent.popupBox("RPC failure", "Cannot communicate with the server");
+									}
+									@Override
+									public void onSuccess(Boolean arg0) {
+										parent.getSidePanel().hide();
+										parent.getSidePanel().display(username);
+									}
+									
+								});
 							}			
 						});
 					} else {
