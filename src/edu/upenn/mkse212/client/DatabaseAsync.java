@@ -59,10 +59,10 @@ public interface DatabaseAsync {
 	 void getWallPostInfo(String wallPostID, AsyncCallback<String[]> callback)
 	 	throws IllegalArgumentException;
 	 
-	 void updateFollowStatus(String user1, String user2, Boolean b, AsyncCallback<Boolean> callback)
+	 void updateFollowStatus(String user1, String user2, Boolean b, AsyncCallback<String> callback)
 	 	throws IllegalArgumentException;
 	 
-	 void getFollowStatus(String user1, String user2, AsyncCallback<Boolean> callback)
+	 void getFollowStatus(String user1, String user2, AsyncCallback<String> callback)
 			 	throws IllegalArgumentException;
 	 
 	//void getWallPosts(String username, String other, AsyncCallback<List<String>> callback)

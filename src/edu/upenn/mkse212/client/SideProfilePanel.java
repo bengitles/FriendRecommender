@@ -53,7 +53,7 @@ public class SideProfilePanel {
 			button3.setWidth("120px");
 			p.add(button3,10,240);
 		} else {
-			parent.getDatabaseService().getFollowStatus(parent.getNavigationBar().getUser(), username, new AsyncCallback<Boolean>() {
+			parent.getDatabaseService().getFollowStatus(parent.getNavigationBar().getUser(), username, new AsyncCallback<String>() {
 				@Override
 				public void onFailure(Throwable caught) {
 					System.out.println(parent.getNavigationBar().getUser());
@@ -63,7 +63,8 @@ public class SideProfilePanel {
 				
 				
 				@Override
-				public void onSuccess(Boolean b) {
+				public void onSuccess(String result) {
+					Boolean b = new Boolean(result);
 					if (b == true) {
 						PushButton button3 = new PushButton("Unfollow");
 						DOM.setStyleAttribute(button3.getElement(), "textAlign", "center");

@@ -70,9 +70,9 @@ public interface Database extends RemoteService {
 	
 	String[] getWallPostInfo(String wallPostID);
 
-	Boolean updateFollowStatus(String user1, String user2, Boolean b);
+	String updateFollowStatus(String user1, String user2, Boolean b);
 	
-	Boolean getFollowStatus(String user1, String user2);
+	String getFollowStatus(String user1, String user2);
 	
 	//List<String> getWallPostsIDs(String username, String other);
 	
