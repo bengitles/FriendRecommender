@@ -10,6 +10,7 @@ public class IterMapper extends Mapper<LongWritable, Text, Text, Text> {
 	public void map(LongWritable key, Text value, Context context) 
 			throws IOException, InterruptedException {
 		String[] all = value.toString().split("\t");
+		System.out.println("IterMapper gets: " + all);
 		String node = all[0];
 		String[] sendTo = all[1].split(" ");
 		String tag = all[2];
