@@ -20,7 +20,6 @@ public class FileCreator {
 		final Map<String, List<String>> interests = new HashMap<String, List<String>>();
 		final Map<String, String> affiliation = new HashMap<String, String>();
 		
-		
 		for (String user : db.getUsers("")) {
 			friends.put(user, new ArrayList<String>());
 			interests.put(user, new ArrayList<String>());

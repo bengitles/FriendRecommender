@@ -10,9 +10,9 @@ public class InitReducer extends Reducer<Text, Text, Text, Text> {
 	public void reduce(Text key, Iterable<Text> values, Context context)
 			throws IOException, InterruptedException {
 		StringBuffer sb = new StringBuffer();
-		int totalOutgoingConnections = 0;
+		String outgoingEdges = null;
 		for (Text v : values) {
-			totalOutgoingConnections += v.toString().split(" ").length;
+			totalOutgoingConnections++;
 		}
 		context.write(new Text(key), new Text(sb.toString()));
 	}
