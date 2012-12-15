@@ -17,7 +17,8 @@ public class DiffMapper extends Mapper<LongWritable, Text, Text, DoubleWritable>
 		String[] all = value.toString().split("\t");
 		String node = all[0];
 		String tag = all[2];
-		Double amount = Double.parseDouble(all[3]);
+		Double amount = 0.0;
+		if (all.length >= 4) amount = Double.parseDouble(all[3]);
 		StringBuffer sb = new StringBuffer(node);
 		sb.append("\t");
 		sb.append(tag);
